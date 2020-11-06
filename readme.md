@@ -12,13 +12,21 @@ npm init -y
 ### [Add Typescript](https://github.com/microsoft/TypeScript-Babel-Starter)
 1. install required packages
 ```sh
-npm i -D typescript @babel/core @babel/cli @babel/register @babel/plugin-proposal-class-properties @babel/preset-env @babel/preset-typescript @types/node
+npm i -D typescript @babel/core @babel/cli @babel/register @babel/plugin-proposal-class-properties @babel/preset-env @babel/preset-typescript @types/node @babel/plugin-proposal-optional-chaining @babel/plugin-proposal-nullish-coalescing-operator
 ```
 2. create `babel.config.js`
 ```js
 module.exports = {
-  presets: [['@babel/preset-env', { targets: { node: 'current' } }], '@babel/preset-typescript'],
-  plugins: ['@babel/proposal-class-properties']
+  presets: [
+    ['@babel/preset-env', { targets: { node: 'current' } }],
+    ['@babel/preset-typescript', { allowNamespaces: true }],
+  ],
+  plugins: [
+    '@babel/proposal-class-properties',
+    '@babel/plugin-proposal-optional-chaining',
+    '@babel/plugin-proposal-nullish-coalescing-operator',
+  ],
+  comments: false,
 };
 ```
 3. create `./src/index.js`
