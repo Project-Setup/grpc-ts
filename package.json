@@ -8,6 +8,7 @@
     "start": "NODE_ENV=production node ./lib/index.js",
     "type-check": "tsc --noEmit",
     "build": "NODE_ENV=production babel src --out-dir lib --copy-files --extensions '.ts,.js'",
+    "build-proto": "sh ./script/build_proto.sh",
     "test": "NODE_ENV=test tsc & jest",
     "test:watch": "NODE_ENV= test jest --watch",
     "test:coverage": "NODE_ENV= test jest --coverage"
