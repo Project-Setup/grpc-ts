@@ -1,4 +1,5 @@
 import { credentials } from '@grpc/grpc-js';
+import { promisify } from 'util';
 
 import { BookServiceClient } from '../proto/book_grpc_pb';
 import { GetBookRequest, GetBookViaAuthor, Book } from '../proto/book_pb';
@@ -16,70 +17,63 @@ class OneBookServiceClient {
     );
   }
 
-  public getBook = (isbn: number): Promise<Book.AsObject> =>
-    new Promise((resolve, reject) => {
-      const request = new GetBookRequest();
-      request.setIsbn(isbn);
-      console.info('[getBook] Request: ', request.toObject());
+  public getBook = async (isbn: number): Promise<Book.AsObject> => {
+    const request = new GetBookRequest();
+    request.setIsbn(isbn);
+    console.info('[getBook] Request: ', request.toObject());
 
-      this.client.getBook(request, (err, book) => {
-        if (err !== null) {
-          reject(err);
-          return;
-        }
-        console.info('[getBook] Book: ', book.toObject());
-        resolve(book.toObject());
-      });
+    const getBookAsync = promisify<GetBookRequest, Book>(
+      this.client.getBook
+    ).bind(this.client);
+
+    return (await getBookAsync(request)).toObject();
+  };
+
+  public getBooks = async (): Promise<Book.AsObject[]> => {
+    const stream = this.client.getBooks();
+
+    [...Array(10).keys()].forEach((_, i) => {
+      const req = new GetBookRequest();
+      req.setIsbn(i);
+      console.info('[getBooks] Request: ', req.toObject());
+      stream.write(req);
     });
 
-  public getBooks = (): Promise<Book.AsObject[]> =>
-    new Promise((resolve, reject) => {
-      const stream = this.client.getBooks();
+    stream.end();
 
-      const books: Book.AsObject[] = [];
-      stream.on('data', (book: Book) => {
-        console.info('[getBooks] Book: ', book.toObject());
-        books.push(book.toObject());
-      });
-      stream.on('end', () => {
-        console.info('[getBooks] Done.');
-        resolve(books);
-      });
+    const books: Book.AsObject[] = [];
+    try {
+      for await (const book of stream) {
+        const bookObject = (book as Book).toObject();
+        console.info('[getBooks] Book: ', bookObject);
+        books.push(bookObject);
+      }
+      return books;
+    } catch (err) {
+      throw err;
+    }
+  };
 
-      stream.on('error', (err) => {
-        reject(err);
-      });
+  public getBooksViaAuthor = async (
+    author: string
+  ): Promise<Book.AsObject[]> => {
+    const request = new GetBookViaAuthor();
+    request.setAuthor(author);
+    console.info('[getBookViaAuthor] Request: ', request.toObject());
 
-      [...Array(10).keys()].forEach((_, i) => {
-        const req = new GetBookRequest();
-        req.setIsbn(i);
-        console.info('[getBooks] Request: ', req.toObject());
-        stream.write(req);
-      });
-
-      stream.end();
-    });
-
-  public getBooksViaAuthor = (author: string): Promise<Book.AsObject[]> =>
-    new Promise((resolve, reject) => {
-      const request = new GetBookViaAuthor();
-      request.setAuthor(author);
-      console.info('[getBookViaAuthor] Request: ', request.toObject());
-
-      const stream = this.client.getBooksViaAuthor(request);
-      const books: Book.AsObject[] = [];
-      stream.on('data', (book: Book) => {
-        console.info('[getBooksViaAuthor] Book: ', book.toObject());
-        books.push(book.toObject());
-      });
-      stream.on('end', () => {
-        console.info('[getBooksViaAuthor] Done');
-        resolve(books);
-      });
-      stream.on('error', (err) => {
-        reject(err);
-      });
-    });
+    const stream = this.client.getBooksViaAuthor(request);
+    const books: Book.AsObject[] = [];
+    try {
+      for await (const book of stream) {
+        const bookObject = (book as Book).toObject();
+        console.info('[getBooksViaAuthor] Book: ', bookObject);
+        books.push(bookObject);
+      }
+      return books;
+    } catch (err) {
+      throw err;
+    }
+  };
 
   public getGreatestBook = (): Promise<Book.AsObject> =>
     new Promise((resolve, reject) => {

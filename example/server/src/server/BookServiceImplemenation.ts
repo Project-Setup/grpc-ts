@@ -26,17 +26,17 @@ class BookServiceImplemenation implements IBookServiceServer {
   public async getBooks(
     call: ServerDuplexStream<GetBookRequest, Book>
   ): Promise<void> {
-    call.on('data', (request: GetBookRequest) => {
+    call.on('end', () => {
+      console.info(`[getBooks] Done`);
+      call.end();
+    });
+    for await (const request of call) {
       const reply = new Book();
       reply.setTitle(`Book ${request.getIsbn()}`);
       reply.setAuthor(`Author ${request.getIsbn()}`);
       reply.setIsbn(request.getIsbn());
       call.write(reply);
-    });
-    call.on('end', () => {
-      console.info(`[getBooks] Done`);
-      call.end();
-    });
+    }
   }
 
   public async getBooksViaAuthor(
@@ -59,19 +59,20 @@ class BookServiceImplemenation implements IBookServiceServer {
     call: ServerReadableStream<GetBookRequest, Book>,
     callback: sendUnaryData<Book>
   ): Promise<void> {
-    let lastOne: GetBookRequest;
-    call.on('data', (request: GetBookRequest) => {
+    let lastOne: GetBookRequest | undefined;
+
+    for await (const request of call) {
       console.info('[getGreatestBook] Request: ', request.toObject());
       lastOne = request;
-    });
-    call.on('end', () => {
-      const reply = new Book();
+    }
+    const reply = new Book();
+    if (lastOne) {
       reply.setIsbn(lastOne.getIsbn());
       reply.setTitle('LastOne');
       reply.setAuthor('LastOne');
-      console.info('[getGreatestBook] Done: ', reply.toObject());
-      callback(null, reply);
-    });
+    }
+    console.info('[getGreatestBook] Done: ', reply.toObject());
+    callback(null, reply);
   }
 }
 
