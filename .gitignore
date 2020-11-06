@@ -8,3 +8,4 @@ public/build/*
 out/
 lib/
 src/config/
+**/src/proto
