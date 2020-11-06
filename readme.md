@@ -5,7 +5,7 @@
 * Jest
 
 ## Example Project
-* go to `example` folder for example project setup
+* go to `example/` folder for example project setup
 
 
 ## Setup
@@ -129,17 +129,7 @@ module.exports =  {
     }],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-function-return-type': 0,
-    '@typescript-eslint/no-namespace': 'off', 
-    'comma-dangle': [
-      'error',
-      {
-        'arrays': 'always-multiline',
-        'objects': 'always-multiline',
-        'imports': 'always-multiline',
-        'exports': 'always-multiline',
-        'functions': 'never'
-      }
-    ],
+    '@typescript-eslint/no-namespace': 'off',
     'no-bitwise': 'off'
   },
   plugins: [
