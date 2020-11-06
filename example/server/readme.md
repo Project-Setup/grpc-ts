@@ -5,7 +5,7 @@
 ```sh
 nvm use || nvm install
 npm i -P
-npm run build-server
+npm run build
 npm run start-server
 ```
 
@@ -20,7 +20,7 @@ npm run dev-server
 ```sh
 nvm use || nvm install
 npm i -P
-npm run build-client
+npm run build
 npm run start-client
 ```
 
