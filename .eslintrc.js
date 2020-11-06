@@ -28,16 +28,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-namespace': 'off',
-    // "comma-dangle": [
-    //   "error",
-    //   {
-    //     arrays: "always-multiline",
-    //     objects: "always-multiline",
-    //     imports: "always-multiline",
-    //     exports: "always-multiline",
-    //     functions: "never",
-    //   },
-    // ],
     'no-bitwise': 'off',
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
