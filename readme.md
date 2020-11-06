@@ -1,3 +1,13 @@
+# gRPC with Typescript
+* gRPC-js
+* Typescript
+* Eslint
+* Jest
+
+## Example Project
+* go to `example` folder for example project setup
+
+
 ## Setup
 ### Setup the project
 1.
